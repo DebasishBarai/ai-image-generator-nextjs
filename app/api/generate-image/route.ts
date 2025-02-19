@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { model, prompt } = await request.json()
+    const { prompt } = await request.json();
 
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${process.env.VITE_CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell`,

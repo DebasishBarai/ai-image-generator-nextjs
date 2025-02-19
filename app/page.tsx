@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Image as ImageIcon, Loader2, Download } from 'lucide-react';
 import { clsx } from 'clsx';
+import Image from 'next/image';
 
 function App() {
   const [prompt, setPrompt] = useState('');
@@ -114,9 +115,10 @@ function App() {
             {generatedImage && (
               <div className="bg-gray-800 p-4 rounded-lg">
                 <div className="relative">
-                  <img
+                  <Image
                     src={generatedImage}
                     alt={prompt}
+                    fill
                     className="w-full h-auto rounded-lg shadow-lg"
                   />
                   <button
@@ -128,7 +130,7 @@ function App() {
                   </button>
                 </div>
                 <p className="mt-4 text-gray-400 text-sm">
-                  Prompt: "{prompt}"
+                  Prompt: &quot;{prompt}&quot;
                 </p>
               </div>
             )}
