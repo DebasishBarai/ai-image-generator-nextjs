@@ -118,7 +118,8 @@ function App() {
                   <Image
                     src={generatedImage}
                     alt={prompt}
-                    fill
+                    width={1000}
+                    height={1000}
                     className="w-full h-auto rounded-lg shadow-lg"
                   />
                   <button
