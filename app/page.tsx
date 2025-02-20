@@ -63,64 +63,68 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold flex items-center justify-center gap-4 mb-4">
+      <div className="container mx-auto px-2 py-6">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-6xl font-bold flex items-center justify-center gap-4 mb-3">
             AI Image Generator
             <Sparkles className="w-8 h-8 text-yellow-400" />
           </h1>
           <p className="text-gray-400 text-lg">Create stunning images with Flux AI</p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
-          <form onSubmit={generateImage} className="mb-8">
-            <div className="flex gap-4">
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe the image you want to generate..."
-                className="flex-1 px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
-              />
-              <button
-                type="submit"
-                disabled={loading || !prompt.trim()}
-                className={clsx(
-                  "px-6 py-3 rounded-lg font-semibold flex items-center gap-2",
-                  loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                )}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <ImageIcon className="w-5 h-5" />
-                    Generate
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto">
+          {/* Left side - Input form */}
+          <div className="md:pr-4 max-w-xl">
+            <form onSubmit={generateImage} className="mb-8">
+              <div className="flex flex-col gap-4">
+                <input
+                  type="text"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Describe the image you want to generate..."
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                />
+                <button
+                  type="submit"
+                  disabled={loading || !prompt.trim()}
+                  className={clsx(
+                    "w-full px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2",
+                    loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                  )}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon className="w-5 h-5" />
+                      Generate
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
 
-          <div className="space-y-4">
             {error && (
               <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
+          </div>
 
+          {/* Right side - Generated image */}
+          <div className="md:pl-4 w-full">
             {generatedImage && (
-              <div className="bg-gray-800 p-4 rounded-lg">
-                <div className="relative">
+              <div className="bg-gray-800 p-2 rounded-lg w-full">
+                <div className="relative w-full aspect-square">
                   <Image
                     src={generatedImage}
                     alt={prompt}
-                    width={1000}
-                    height={1000}
-                    className="w-full h-auto rounded-lg shadow-lg"
+                    fill
+                    className="object-contain rounded-lg shadow-lg"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                   <button
                     onClick={handleDownload}
@@ -130,14 +134,11 @@ function App() {
                     <Download className="w-5 h-5" />
                   </button>
                 </div>
-                <p className="mt-4 text-gray-400 text-sm">
-                  Prompt: &quot;{prompt}&quot;
-                </p>
               </div>
             )}
 
             {!generatedImage && !loading && !error && (
-              <div className="bg-gray-800 p-8 rounded-lg text-center">
+              <div className="bg-gray-800 p-8 rounded-lg text-center aspect-square w-full flex flex-col items-center justify-center">
                 <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-600" />
                 <p className="text-gray-400">
                   Your generated image will appear here
