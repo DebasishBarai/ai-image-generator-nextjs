@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { prompt } = await request.json();
+    const { prompt, model, ...inputValues } = await request.json();
 
     // Add randomization through one or more of these methods:
     // 1. Add a random seed to the prompt
@@ -20,10 +20,15 @@ export async function POST(request: Request) {
       num_samples: 1,  // if the API supports multiple samples
       seed: randomSeed,  // if the API supports seed parameter
       // Add any other parameters the API supports for variation
+      ...inputValues,
     };
 
+    
+
+    console.log('Request parameters:', JSON.stringify(parameters, null, 2));
+
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${process.env.VITE_CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell`,
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.VITE_CLOUDFLARE_ACCOUNT_ID}/ai/run/${model}`,
       {
         method: 'POST',
         headers: {
@@ -35,25 +40,36 @@ export async function POST(request: Request) {
     );
 
     const data = await response.json();
+    console.log('Full API Response:', JSON.stringify(data, null, 2));
+
     if (!response.ok || !data.success) {
-      throw new Error(`Cloudflare API error: ${data.errors?.[0]?.message || response.statusText}`);
+      throw new Error(`Cloudflare API error: ${JSON.stringify(data.errors, null, 2)}`);
     }
-    if (!data.result?.image) {
+
+    // Handle different model response formats
+    let imageData;
+    if (model.includes('flux')) {
+      imageData = data.result.image;
+    } else {
+      // For other models, the image might be in a different format or array
+      imageData = Array.isArray(data.result) ? data.result[0] : data.result;
+    }
+
+    if (!imageData) {
       throw new Error('No image data received from the server');
     }
 
     return NextResponse.json({
       success: true,
       result: {
-        image: `data:image/jpeg;base64,${data.result.image}`,
-        seed: randomSeed  // Return the seed for reproducibility if needed
+        image: `data:image/jpeg;base64,${imageData}`,
       }
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error details:', err);
     return NextResponse.json({
       success: false,
-      error: { err }
-    });
+      error: err instanceof Error ? err.message : 'Unknown error occurred'
+    }, { status: 500 });
   }
 }
