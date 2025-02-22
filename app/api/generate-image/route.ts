@@ -15,15 +15,24 @@ export async function POST(request: Request) {
     const promptWithStyle = `${promptWithSeed}, ${randomStyle} style`;
 
     // 3. Add optional parameters to the API call
-    const parameters = {
-      prompt: promptWithStyle,
-      num_samples: 1,  // if the API supports multiple samples
-      seed: randomSeed,  // if the API supports seed parameter
-      // Add any other parameters the API supports for variation
-      ...inputValues,
-    };
+    let parameters
 
-    
+    if (model.includes('dreamshaper')) {
+      parameters = {
+        prompt: promptWithStyle,
+        num_samples: 1,  // if the API supports multiple samples
+        seed: randomSeed,
+        num_inference_steps: inputValues.num_steps || 20,
+        guidance_scale: inputValues.guidance || 7.5,
+      };
+    } else {
+      parameters = {
+        prompt: promptWithStyle,
+        num_samples: 1,  // if the API supports multiple samples
+        seed: randomSeed,
+        ...inputValues,
+      };
+    }
 
     console.log('Request parameters:', JSON.stringify(parameters, null, 2));
 
@@ -39,32 +48,48 @@ export async function POST(request: Request) {
       }
     );
 
+    const contentType = response.headers.get('content-type');
+    console.log('Response content-type:', contentType);
+
+    if (contentType?.includes('image')) {
+      const arrayBuffer = await response.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      return NextResponse.json({
+        success: true,
+        result: {
+          image: `data:${contentType};base64,${base64}`
+        }
+      });
+    }
+
     const data = await response.json();
-    console.log('Full API Response:', JSON.stringify(data, null, 2));
+    console.log({ data: `JSON response: ${JSON.stringify(data, null, 2)}` });
 
-    if (!response.ok || !data.success) {
-      throw new Error(`Cloudflare API error: ${JSON.stringify(data.errors, null, 2)}`);
+    if (!response.ok || (data && !data.success)) {
+      throw new Error(
+        data?.errors?.[0]?.message ||
+        data?.error ||
+        `API error: ${response.statusText}`
+      );
     }
 
-    // Handle different model response formats
-    let imageData;
     if (model.includes('flux')) {
-      imageData = data.result.image;
-    } else {
-      // For other models, the image might be in a different format or array
-      imageData = Array.isArray(data.result) ? data.result[0] : data.result;
+      return NextResponse.json({
+        success: true,
+        result: {
+          image: `data:image/jpeg;base64,${data.result.image}`,
+        }
+      });
     }
 
-    if (!imageData) {
-      throw new Error('No image data received from the server');
-    }
-
+    const imageData = Array.isArray(data.result) ? data.result[0] : data.result;
     return NextResponse.json({
       success: true,
       result: {
-        image: `data:image/jpeg;base64,${imageData}`,
+        image: `data:image/png;base64,${imageData}`
       }
     });
+
   } catch (err) {
     console.error('Error details:', err);
     return NextResponse.json({

@@ -30,10 +30,10 @@ type Schema = {
 
 function createZodSchema(schema: Schema) {
   const properties: Record<string, z.ZodType> = {};
-  
+
   Object.entries(schema.input.properties).forEach(([key, prop]) => {
     let zodType: z.ZodType;
-    
+
     if (prop.type === 'number' || prop.type === 'integer') {
       zodType = z.number().describe(prop.description || '');
       if (prop.type === 'integer') {
@@ -67,30 +67,31 @@ function createZodSchema(schema: Schema) {
   return z.object(properties);
 }
 
-function SchemaInputs({ 
-  schema, 
-  inputValues, 
+function SchemaInputs({
+  schema,
+  inputValues,
   setInputValues,
   prompt,
   setPrompt
-}: { 
-  schema: Schema | null, 
+}: {
+  schema: Schema | null,
   inputValues: Record<string, any>,
   setInputValues: (values: Record<string, any>) => void,
   prompt: string,
   setPrompt: (value: string) => void
 }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   if (!schema) return null;
 
   const zodSchema = createZodSchema(schema);
 
   const handleInputChange = (key: string, value: any) => {
-    const parsedValue = schema.input.properties[key].type === 'number' || 
-                       schema.input.properties[key].type === 'integer' 
-                       ? Number(value)
-                       : value;
+    const parsedValue = schema.input.properties[key].type === 'number' ||
+      schema.input.properties[key].type === 'integer'
+      ? Number(value)
+      : value;
 
     if (key === 'prompt') {
       setPrompt(parsedValue);
@@ -104,11 +105,24 @@ function SchemaInputs({
       setErrors(prev => ({ ...prev, [key]: '' }));
     } catch (err) {
       if (err instanceof z.ZodError) {
-        setErrors(prev => ({ 
-          ...prev, 
-          [key]: err.errors[0]?.message || 'Invalid value' 
+        setErrors(prev => ({
+          ...prev,
+          [key]: err.errors[0]?.message || 'Invalid value'
         }));
       }
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = (reader.result as string).split(',')[1];
+        setInputValues(prev => ({ ...prev, image_b64: base64String }));
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -117,6 +131,8 @@ function SchemaInputs({
   return (
     <div className="flex flex-col gap-4">
       {Object.entries(schema.input.properties).map(([key, prop]) => {
+        if (key === 'image' || key === 'image_b64') return null;
+
         const required = isFieldRequired(key);
         return (
           <div key={key} className="flex flex-col gap-2">
@@ -127,22 +143,41 @@ function SchemaInputs({
                 <span className="ml-2 text-xs text-gray-400">({prop.description})</span>
               )}
             </label>
-            {prop.type === 'number' ? (
-              <input
-                type="number"
-                id={key}
-                value={key === 'prompt' ? prompt : (inputValues[key] ?? prop.default ?? '')}
-                onChange={(e) => handleInputChange(key, Number(e.target.value))}
-                min={prop.minimum}
-                max={prop.maximum}
-                required={required}
-                className={clsx(
-                  "w-full px-4 py-3 rounded-lg bg-gray-700 border focus:ring-2 focus:outline-none text-white",
-                  errors[key] 
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
-                    : "border-gray-600 focus:border-blue-500 focus:ring-blue-500"
-                )}
-              />
+            {prop.type === 'number' || prop.type === 'integer' ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between text-sm text-gray-400">
+                  <span>{Number(inputValues[key] ?? prop.default ?? prop.minimum ?? 0).toFixed(prop.type === 'number' ? 2 : 0)}</span>
+                  <span>Range: {(prop.minimum ?? 0).toFixed(prop.type === 'number' ? 2 : 0)} - {
+                    key === 'strength'
+                      ? '1.00'
+                      : key === 'guidance'
+                        ? '20.00'
+                        : (prop.maximum ?? 100).toFixed(prop.type === 'number' ? 2 : 0)
+                  }</span>
+                </div>
+                <input
+                  type="range"
+                  id={key}
+                  value={key === 'prompt' ? prompt : (inputValues[key] ?? prop.default ?? '')}
+                  onChange={(e) => handleInputChange(key, Number(parseFloat(e.target.value).toFixed(2)))}
+                  min={prop.minimum ?? 0}
+                  max={
+                    key === 'strength'
+                      ? 1
+                      : key === 'guidance'
+                        ? 20
+                        : (prop.maximum ?? 100)
+                  }
+                  step={prop.type === 'integer' ? 1 : 0.01}
+                  required={required}
+                  className={clsx(
+                    "w-full h-2 rounded-lg bg-gray-700 border focus:ring-2 focus:outline-none accent-blue-500",
+                    errors[key]
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      : "border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                  )}
+                />
+              </div>
             ) : prop.type === 'boolean' ? (
               <select
                 id={key}
@@ -151,8 +186,8 @@ function SchemaInputs({
                 required={required}
                 className={clsx(
                   "w-full px-4 py-3 rounded-lg bg-gray-700 border focus:ring-2 focus:outline-none text-white",
-                  errors[key] 
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                  errors[key]
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                     : "border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                 )}
               >
@@ -169,8 +204,8 @@ function SchemaInputs({
                 placeholder={key === 'prompt' ? "Describe the image you want to generate..." : ""}
                 className={clsx(
                   "w-full px-4 py-3 rounded-lg bg-gray-700 border focus:ring-2 focus:outline-none text-white",
-                  errors[key] 
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                  errors[key]
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                     : "border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                 )}
               />
@@ -181,6 +216,36 @@ function SchemaInputs({
           </div>
         );
       })}
+
+      {(schema.input.properties.image || schema.input.properties.image_b64) && (
+        <div className="flex flex-col gap-2">
+          <label htmlFor="image" className="text-sm text-gray-300">
+            Upload Image
+            <span className="ml-2 text-xs text-gray-400">(For image-to-image generation)</span>
+          </label>
+          <input
+            id="image"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className={clsx(
+              "w-full px-4 py-3 rounded-lg bg-gray-700 border focus:ring-2 focus:outline-none text-white cursor-pointer",
+              "file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0",
+              "file:text-sm file:font-semibold file:bg-blue-500 file:text-white",
+              "hover:file:bg-blue-600"
+            )}
+          />
+          {previewImage && (
+            <div className="mt-2">
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="max-w-full h-auto rounded-lg border border-gray-600"
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -256,7 +321,7 @@ function App() {
         `/api/generate-image`,
         {
           method: 'POST',
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             ...inputValues,
             prompt,
             model: selectedModel,
@@ -335,9 +400,9 @@ function App() {
                   </select>
                 </div>
 
-                <SchemaInputs 
-                  schema={schema} 
-                  inputValues={inputValues} 
+                <SchemaInputs
+                  schema={schema}
+                  inputValues={inputValues}
                   setInputValues={setInputValues}
                   prompt={prompt}
                   setPrompt={setPrompt}
@@ -349,8 +414,8 @@ function App() {
                 disabled={loading || !selectedModel || !prompt.trim() || Object.keys(errors).length > 0}
                 className={clsx(
                   "w-full px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2",
-                  (loading || !selectedModel || !prompt.trim() || Object.keys(errors).length > 0) 
-                    ? "bg-gray-600 cursor-not-allowed" 
+                  (loading || !selectedModel || !prompt.trim() || Object.keys(errors).length > 0)
+                    ? "bg-gray-600 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
                 )}
               >
