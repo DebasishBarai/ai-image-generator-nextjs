@@ -42,7 +42,7 @@ export default function TermsAndConditions() {
             
             <h2 className="text-xl font-semibold mt-6 mb-3 text-gray-100">3. User Content</h2>
             <p className="text-gray-300">
-              In these terms and conditions, "&quot;User Content&quot; means material (including without limitation text, images, audio material, video material and audio-visual material) that you submit to this website, for whatever purpose.
+              In these terms and conditions, &quot;User Content&quot; means material (including without limitation text, images, audio material, video material and audio-visual material) that you submit to this website, for whatever purpose.
             </p>
             <p className="mt-2 text-gray-300">
               You grant to us a worldwide, irrevocable, non-exclusive, royalty-free license to use, reproduce, adapt, publish, translate and distribute your User Content in any existing or future media. You also grant to us the right to sub-license these rights, and the right to bring an action for infringement of these rights.
