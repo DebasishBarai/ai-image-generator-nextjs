@@ -9,11 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cloudflare/ai": "^1.2.2",
+    "cloudflare": "^4.1.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.475.0",
     "next": "15.1.7",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
