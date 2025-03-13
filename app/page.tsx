@@ -118,8 +118,8 @@ function SchemaInputs({
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = (reader.result as string).split(',')[1];
-        setInputValues(prev => ({ ...prev, image_b64: base64String }));
+        const base64string = (reader.result as string).split(',')[1];
+        setInputValues(prev => ({ ...prev, image_b64: base64string }));
         setPreviewImage(reader.result as string);
       };
       reader.readAsDataURL(file);
@@ -128,10 +128,18 @@ function SchemaInputs({
 
   const isFieldRequired = (key: string) => schema.input.required.includes(key);
 
+  // Function to check if a field should be hidden
+  const shouldHideField = (key: string) => {
+    return key === 'image' ||
+      key === 'image_b64' ||
+      key.toLowerCase().includes('mask');
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {Object.entries(schema.input.properties).map(([key, prop]) => {
-        if (key === 'image' || key === 'image_b64') return null;
+        // Skip fields that should be hidden
+        if (shouldHideField(key)) return null;
 
         const required = isFieldRequired(key);
         return (
@@ -217,35 +225,36 @@ function SchemaInputs({
         );
       })}
 
-      {(schema.input.properties.image || schema.input.properties.image_b64) && (
-        <div className="flex flex-col gap-2">
-          <label htmlFor="image" className="text-sm text-gray-300">
-            Upload Image
-            <span className="ml-2 text-xs text-gray-400">(For image-to-image generation)</span>
-          </label>
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className={clsx(
-              "w-full px-4 py-3 rounded-lg bg-gray-700 border focus:ring-2 focus:outline-none text-white cursor-pointer",
-              "file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0",
-              "file:text-sm file:font-semibold file:bg-blue-500 file:text-white",
-              "hover:file:bg-blue-600"
-            )}
-          />
-          {previewImage && (
-            <div className="mt-2">
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="max-w-full h-auto rounded-lg border border-gray-600"
-              />
-            </div>
-          )}
-        </div>
-      )}
+      {/* Add image upload if schema includes image-related fields */}
+      {/* {(schema.input.properties.image || schema.input.properties.image_b64) && ( */}
+      {/*   <div className="flex flex-col gap-2"> */}
+      {/*     <label htmlFor="image" className="text-sm text-gray-300"> */}
+      {/*       Upload Image */}
+      {/*       <span className="ml-2 text-xs text-gray-400">(For image-to-image generation)</span> */}
+      {/*     </label> */}
+      {/*     <input */}
+      {/*       id="image" */}
+      {/*       type="file" */}
+      {/*       accept="image/*" */}
+      {/*       onChange={handleImageUpload} */}
+      {/*       className={clsx( */}
+      {/*         "w-full px-4 py-3 rounded-lg bg-gray-700 border focus:ring-2 focus:outline-none text-white cursor-pointer", */}
+      {/*         "file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0", */}
+      {/*         "file:text-sm file:font-semibold file:bg-blue-500 file:text-white", */}
+      {/*         "hover:file:bg-blue-600" */}
+      {/*       )} */}
+      {/*     /> */}
+      {/*     {previewImage && ( */}
+      {/*       <div className="mt-2"> */}
+      {/*         <img */}
+      {/*           src={previewImage} */}
+      {/*           alt="Preview" */}
+      {/*           className="max-w-full h-auto rounded-lg border border-gray-600" */}
+      {/*         /> */}
+      {/*       </div> */}
+      {/*     )} */}
+      {/*   </div> */}
+      {/* )} */}
     </div>
   );
 }
@@ -369,7 +378,7 @@ function App() {
             AI Image Generator
             <Sparkles className="w-8 h-8 text-yellow-400" />
           </h1>
-          <p className="text-gray-400 text-lg">Create stunning images with Flux AI</p>
+          <p className="text-gray-400 text-lg">Create stunning images with AI</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto">

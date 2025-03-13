@@ -6,6 +6,7 @@ import Cloudflare from "cloudflare";
 
 export async function GET(request: NextRequest) {
   const model = request.nextUrl.searchParams.get("model");
+
   if (!model) return new Response("Model not specified", { status: 400 });
 
   try {

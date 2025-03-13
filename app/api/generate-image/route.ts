@@ -83,6 +83,7 @@ export async function POST(request: Request) {
     }
 
     const imageData = Array.isArray(data.result) ? data.result[0] : data.result;
+    console.log({ imageData: `Image data: ${imageData}` });
     return NextResponse.json({
       success: true,
       result: {
