@@ -31,7 +31,7 @@ export default function AboutUs() {
               <h2 className="text-2xl font-semibold mb-4 text-gray-100">Our Technology</h2>
               <p className="text-gray-300 mb-4">
                 Our platform is built on Cloudflare Workers AI, a powerful edge computing platform that allows us to run 
-                state-of-the-art AI models directly on Cloudflare's global network. This architecture provides several key advantages:
+                state-of-the-art AI models directly on Cloudflare&apos;s global network. This architecture provides several key advantages:
               </p>
               
               <ul className="list-disc pl-6 mb-4 text-gray-300">
@@ -40,15 +40,15 @@ export default function AboutUs() {
                   we can generate images with minimal latency, regardless of your location.
                 </li>
                 <li className="mb-2">
-                  <span className="font-medium text-gray-200">Scalability:</span> Cloudflare's distributed infrastructure allows our 
+                  <span className="font-medium text-gray-200">Scalability:</span> Cloudflare&apos;s distributed infrastructure allows our 
                   application to scale automatically, handling traffic spikes without performance degradation.
                 </li>
                 <li className="mb-2">
-                  <span className="font-medium text-gray-200">Advanced AI Models:</span> We leverage Cloudflare's integration with 
+                  <span className="font-medium text-gray-200">Advanced AI Models:</span> We leverage Cloudflare&apos;s integration with 
                   leading AI models like Stable Diffusion, enabling high-quality image generation from text prompts.
                 </li>
                 <li className="mb-2">
-                  <span className="font-medium text-gray-200">Security:</span> Our infrastructure benefits from Cloudflare's 
+                  <span className="font-medium text-gray-200">Security:</span> Our infrastructure benefits from Cloudflare&apos;s 
                   robust security features, ensuring your data and interactions are protected.
                 </li>
               </ul>
@@ -60,7 +60,7 @@ export default function AboutUs() {
               </p>
               
               <p className="text-gray-300">
-                We're committed to responsible AI development and use, ensuring that our technology is used ethically 
+                We&apos;re committed to responsible AI development and use, ensuring that our technology is used ethically 
                 and that we implement appropriate safeguards to prevent misuse.
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function AboutUs() {
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-gray-100">Contact Us</h2>
               <p className="text-gray-300">
-                Have questions or feedback? We'd love to hear from you! Visit our 
+                Have questions or feedback? We&apos;d love to hear from you! Visit our 
                 <Link href="/contact" className="text-blue-400 hover:text-blue-300 transition-colors ml-1">
                   Contact Page
                 </Link> to get in touch with our team.
