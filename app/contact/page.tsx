@@ -23,7 +23,7 @@ export default function Contact() {
               <div className="text-center mb-8">
                 <h2 className="text-xl font-semibold mb-4 text-gray-100">Get in Touch</h2>
                 <p className="text-gray-300 mb-6">
-                  Have questions about our AI Image Generator? We're here to help! For any queries, please contact us via email.
+                  Have questions about our AI Image Generator? We&apos;re here to help! For any queries, please contact us via email.
                 </p>
               </div>
               
@@ -42,7 +42,7 @@ export default function Contact() {
               
               <div className="text-center mt-8">
                 <p className="text-gray-300">
-                  We'll get back to you as soon as possible. Thank you for your interest in our AI Image Generator!
+                  We&apos;ll get back to you as soon as possible. Thank you for your interest in our AI Image Generator!
                 </p>
               </div>
             </div>
