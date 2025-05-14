@@ -1,106 +1,70 @@
-'use client';
+import Head from "next/head";
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight, Sparkles, Zap, Shield, Code } from 'lucide-react';
-import Footer from './components/Footer';
-
-export default function LandingPage() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 flex items-center justify-center gap-4">
-              AI Image Generator
-              <Sparkles className="w-8 h-8 text-yellow-400" />
-            </h1>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Transform your ideas into stunning visuals with our state-of-the-art AI image generation platform.
-              Create unique, high-quality images in seconds.
-            </p>
-            <div className="flex gap-4 justify-center">
-              <Link
-                href="/auth/login"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
-              >
-                Get Started
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/about"
-                className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-              >
-                Learn More
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+    <>
+      <Head>
+        <title>AI Image Generator</title>
+        <meta name="description" content="Generate stunning AI images instantly." />
+      </Head>
+      <main className="bg-gradient-to-br from-gray-900 to-black min-h-screen text-white font-sans">
+        {/* Hero Section */}
+        <section className="text-center py-24 px-6">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">Create Stunning Images with AI</h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-8">Unleash creativity with just a few words.</p>
+          <a
+            href="/generate"
+            className="bg-indigo-600 hover:bg-indigo-700 transition-all text-white font-semibold py-3 px-6 rounded-lg text-lg"
+          >
+            Generate Now
+          </a>
+        </section>
 
-      {/* Features Section */}
-      <div className="py-24 bg-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">Why Choose Our Platform?</h2>
-            <p className="text-gray-300">Experience the power of AI-driven image generation</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
+        {/* Features */}
+        <section className="py-20 bg-black px-6">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             {[
               {
-                icon: <Zap className="w-8 h-8 text-blue-400" />,
-                title: "Lightning Fast",
-                description: "Generate high-quality images in seconds with our optimized AI models"
+                title: "Realistic Outputs",
+                desc: "AI trained on millions of images gives ultra-realistic results.",
               },
               {
-                icon: <Shield className="w-8 h-8 text-green-400" />,
-                title: "Secure & Private",
-                description: "Your data and creations are protected with enterprise-grade security"
+                title: "Fast & Free",
+                desc: "Generate high-quality images in seconds at no cost.",
               },
               {
-                icon: <Code className="w-8 h-8 text-purple-400" />,
-                title: "Advanced API",
-                description: "Integrate our powerful image generation capabilities into your applications"
-              }
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="bg-gray-700/50 p-6 rounded-lg hover:transform hover:-translate-y-1 transition-transform"
-              >
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-300">{feature.description}</p>
+                title: "Customizable",
+                desc: "Control styles, prompts, and quality for creative freedom.",
+              },
+            ].map(({ title, desc }) => (
+              <div key={title}>
+                <h3 className="text-2xl font-semibold mb-3">{title}</h3>
+                <p className="text-gray-400">{desc}</p>
               </div>
             ))}
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* CTA Section */}
-      <div className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-blue-600 rounded-2xl p-8 md:p-16 text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Ready to Create Amazing Images?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of creators who are already using our platform to bring their ideas to life.
-            </p>
-            <Link
-              href="/auth/signup"
-              className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
-            >
-              Sign Up Now
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+        {/* Demo / Gallery */}
+        <section className="py-20 px-6 bg-gradient-to-t from-black via-gray-900 to-black">
+          <h2 className="text-4xl text-center font-bold mb-12">See What AI Can Do</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {["/demo1.jpg", "/demo2.jpg", "/demo3.jpg", "/demo4.jpg"].map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt={`Demo ${i + 1}`}
+                className="rounded-xl object-cover shadow-lg transition-transform hover:scale-105 duration-300"
+              />
+            ))}
           </div>
-        </div>
-      </div>
+        </section>
 
-      <Footer />
-    </div>
+        {/* Footer */}
+        <footer className="bg-black py-12 text-center text-gray-500 text-sm">
+          <p>© 2025 AI Image Generator. All rights reserved.</p>
+        </footer>
+      </main>
+    </>
   );
 }
